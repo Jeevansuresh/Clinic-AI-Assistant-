@@ -1,4 +1,4 @@
-**Clinic WhatsApp AI Assistant**
+**ClinicAI **
 
 ---
 
@@ -26,7 +26,7 @@ A missed call equals a lost appointment. Every missed appointment leads to lost 
 
 ---
 
-**The Solution: Clinic AI Assistant**
+**The Solution: ClinicAI**
 
 Our project reimagines the role of digital healthcare in India’s most underserved sector — small clinics. With no need for expensive software or infrastructure, the Clinic WhatsApp AI Assistant puts powerful automation in the hands of every neighborhood doctor using just WhatsApp.
 
@@ -123,3 +123,55 @@ It acts as a smart virtual receptionist, helping clinics function more efficient
 * **Sustainability**: Doctors save time, patients stay informed, and clinics grow — all while keeping costs low.
 
 Clinic WhatsApp AI Assistant isn’t just a project — it’s a leap forward for grassroots healthcare in India.
+
+**Sameple Databse**
+-- Step 1: Create the database
+CREATE DATABASE IF NOT EXISTS clinic_db;
+
+-- Step 2: Use the database
+USE clinic_db;
+
+-- Step 3: Drop tables if they exist (for clean setup)
+DROP TABLE IF EXISTS appointments;
+DROP TABLE IF EXISTS doctor_schedule;
+
+-- Step 4: Create the doctor_schedule table
+CREATE TABLE doctor_schedule (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    doctor_name VARCHAR(100) NOT NULL,
+    day VARCHAR(10) NOT NULL,         -- Example: Monday, Tuesday
+    date DATE NOT NULL,               -- Specific date
+    time_slot TIME NOT NULL,          -- Example: 09:00:00
+    availability_status VARCHAR(20)   -- Available / Blocked / Not Available
+);
+
+-- Step 5: Create the appointments table
+CREATE TABLE appointments (
+    appointment_number INT AUTO_INCREMENT PRIMARY KEY,
+    patient_name VARCHAR(100) NOT NULL,
+    doctor_name VARCHAR(100) NOT NULL,
+    issue VARCHAR(255),
+    appointment_day VARCHAR(10),
+    appointment_date DATE,
+    appointment_time TIME,
+    status VARCHAR(20)                -- Booked / Cancelled / Completed
+);
+
+-- Step 6: Sample data for doctor_schedule
+INSERT INTO doctor_schedule (doctor_name, day, date, time_slot, availability_status)
+VALUES
+('Dr. Ram', 'Sunday', '2025-08-03', '09:00:00', 'Available'),
+('Dr. Ram', 'Sunday', '2025-08-03', '10:00:00', 'Blocked'),
+('Dr. Ram', 'Sunday', '2025-08-03', '11:00:00', 'Available'),
+('Dr. Shyam', 'Monday', '2025-08-04', '09:00:00', 'Available'),
+('Dr. Shyam', 'Monday', '2025-08-04', '10:00:00', 'Blocked'),
+('Dr. Shyam', 'Monday', '2025-08-04', '11:00:00', 'Not Available'),
+('Dr. Ram', 'Tuesday', '2025-08-05', '09:00:00', 'Blocked'),
+('Dr. Ram', 'Tuesday', '2025-08-05', '10:00:00', 'Available'),
+('Dr. Ram', 'Tuesday', '2025-08-05', '11:00:00', 'Available');
+
+-- Step 7: Sample data for appointments
+INSERT INTO appointments (patient_name, doctor_name, issue, appointment_day, appointment_date, appointment_time, status)
+VALUES
+('Aarav Patel', 'Dr. Ram', 'Headache', 'Sunday', '2025-08-03', '09:00:00', 'Booked'),
+('Meera Iyer', 'Dr. Shyam', 'Fever', 'Monday', '2025-08-04', '09:00:00', 'Booked');
