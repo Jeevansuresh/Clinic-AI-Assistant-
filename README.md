@@ -32,7 +32,7 @@ I personally contacted **40+ clinics in Besant Nagar and Adyar**. (Data availabl
 And here’s what they told me:
 
 > “We don’t have time to learn new systems.”
-> "It's very interesting, There are no AI based apps for this""
+> "It's very interesting, There are no AI based apps for this"
 > “We don’t want to pay for big hospital software.”  
 > “If it works on WhatsApp, we’re in.”
 
