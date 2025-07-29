@@ -27,15 +27,16 @@ Apps like **Practo**?
 ## 💬 I Asked 40+ Clinics Myself
 
 We didn’t assume the problem — we asked.  
-I personally visited **40+ clinics in Besant Nagar and Adyar**.
+I personally contacted **40+ clinics in Besant Nagar and Adyar**. (Data available in excel sheet)
 
 And here’s what they told me:
 
-> “We don’t have time to learn new systems.”  
+> “We don’t have time to learn new systems.”
+> "It's very interesting, There are no AI based apps for this""
 > “We don’t want to pay for big hospital software.”  
 > “If it works on WhatsApp, we’re in.”
 
-They wanted something **simple, reliable, and helpful.**  
+They were very interested to try it out
 That’s what **ClinicAI** is.
 
 ---
