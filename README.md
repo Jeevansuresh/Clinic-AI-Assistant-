@@ -124,28 +124,28 @@ It acts as a smart virtual receptionist, helping clinics function more efficient
 
 Clinic WhatsApp AI Assistant isn’t just a project — it’s a leap forward for grassroots healthcare in India.
 
-**Sameple Databse**
--- Step 1: Create the database
-CREATE DATABASE IF NOT EXISTS clinic_db;
+**Sample Database**
+-- Sample Database Setup for Sunrise Clinics
 
--- Step 2: Use the database
+-- 1. Create Database
+CREATE DATABASE IF NOT EXISTS clinic_db;
 USE clinic_db;
 
--- Step 3: Drop tables if they exist (for clean setup)
+-- 2. Clean Setup (Drop if exists)
 DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS doctor_schedule;
 
--- Step 4: Create the doctor_schedule table
+-- 3. Create doctor_schedule Table
 CREATE TABLE doctor_schedule (
     id INT AUTO_INCREMENT PRIMARY KEY,
     doctor_name VARCHAR(100) NOT NULL,
-    day VARCHAR(10) NOT NULL,         -- Example: Monday, Tuesday
-    date DATE NOT NULL,               -- Specific date
-    time_slot TIME NOT NULL,          -- Example: 09:00:00
+    day VARCHAR(10) NOT NULL,         -- Sunday, Monday, etc.
+    date DATE NOT NULL,               -- Specific date (e.g., '2025-08-03')
+    time_slot TIME NOT NULL,          -- Time slot (e.g., '09:00:00')
     availability_status VARCHAR(20)   -- Available / Blocked / Not Available
 );
 
--- Step 5: Create the appointments table
+-- 4. Create appointments Table
 CREATE TABLE appointments (
     appointment_number INT AUTO_INCREMENT PRIMARY KEY,
     patient_name VARCHAR(100) NOT NULL,
@@ -157,7 +157,7 @@ CREATE TABLE appointments (
     status VARCHAR(20)                -- Booked / Cancelled / Completed
 );
 
--- Step 6: Sample data for doctor_schedule
+-- 5. Insert Sample Data into doctor_schedule
 INSERT INTO doctor_schedule (doctor_name, day, date, time_slot, availability_status)
 VALUES
 ('Dr. Ram', 'Sunday', '2025-08-03', '09:00:00', 'Available'),
@@ -170,7 +170,7 @@ VALUES
 ('Dr. Ram', 'Tuesday', '2025-08-05', '10:00:00', 'Available'),
 ('Dr. Ram', 'Tuesday', '2025-08-05', '11:00:00', 'Available');
 
--- Step 7: Sample data for appointments
+-- 6. Insert Sample Data into appointments
 INSERT INTO appointments (patient_name, doctor_name, issue, appointment_day, appointment_date, appointment_time, status)
 VALUES
 ('Aarav Patel', 'Dr. Ram', 'Headache', 'Sunday', '2025-08-03', '09:00:00', 'Booked'),
