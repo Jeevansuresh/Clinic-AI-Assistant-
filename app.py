@@ -3,6 +3,7 @@ from twilio.twiml.messaging_response import MessagingResponse
 from ollama_client import ask_mistral, classify_message
 import mysql.connector
 app = Flask(__name__)
+user_sessions = {}
 @app.route("/", methods=["POST"])
 def bot():
     user_msg = request.values.get("Body", "").strip()
