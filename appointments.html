@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital AI Assistant - Appointments</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="appointments.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-hospital-alt"></i>
+                <h2>Hospital AI</h2>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item active">
+                    <a href="appointments.html">
+                        <i class="fas fa-calendar-alt"></i>
+                        Appointments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#patients">
+                        <i class="fas fa-users"></i>
+                        Patients
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#treatments">
+                        <i class="fas fa-stethoscope"></i>
+                        Treatments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>Appointments Calendar</h1>
+                    <p id="currentMonth"></p>
+                </div>
+                <div class="header-right">
+                    <div class="calendar-controls">
+                        <button id="prevMonth" class="calendar-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button id="todayBtn" class="calendar-btn">
+                            Today
+                        </button>
+                        <button id="nextMonth" class="calendar-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="doctor-info">
+                        <img src="https://via.placeholder.com/40x40/4CAF50/white?text=DR" alt="Doctor" class="doctor-avatar">
+                        <span>Dr. Sarah Johnson</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Calendar Content -->
+            <div class="calendar-content">
+                <!-- Calendar Header -->
+                <div class="calendar-header">
+                    <div class="weekday">Sun</div>
+                    <div class="weekday">Mon</div>
+                    <div class="weekday">Tue</div>
+                    <div class="weekday">Wed</div>
+                    <div class="weekday">Thu</div>
+                    <div class="weekday">Fri</div>
+                    <div class="weekday">Sat</div>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- Calendar days will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <div>
+                        <h3 id="totalAppointments">0</h3>
+                        <p>Total Appointments</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-user-clock"></i>
+                    <div>
+                        <h3 id="todayAppointments">0</h3>
+                        <p>Today's Appointments</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h3 id="upcomingAppointments">0</h3>
+                        <p>Upcoming</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <h3 id="completedAppointments">0</h3>
+                        <p>Completed</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Appointment Details Modal -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content appointment-modal">
+            <div class="modal-header">
+                <h2 id="appointmentTitle">Appointment Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <div class="appointment-info-grid">
+                    <div class="appointment-details">
+                        <h3>Appointment Information</h3>
+                        <div class="detail-item">
+                            <label>Date & Time:</label>
+                            <span id="appointmentDateTime">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Patient Name:</label>
+                            <span id="appointmentPatientName">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Complaint:</label>
+                            <span id="appointmentComplaint">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Status:</label>
+                            <span id="appointmentStatus" class="status-badge">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Duration:</label>
+                            <span id="appointmentDuration">30 minutes</span>
+                        </div>
+                    </div>
+                    
+                    <div class="patient-quick-info">
+                        <h3>Patient Quick Info</h3>
+                        <div class="patient-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="patient-details">
+                            <div class="detail-item">
+                                <label>Age:</label>
+                                <span id="patientAge">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Contact:</label>
+                                <span id="patientContact">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Blood Group:</label>
+                                <span id="patientBloodGroup">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="appointment-actions">
+                    <button class="btn-primary" id="viewFullProfile">
+                        <i class="fas fa-user-md"></i>
+                        View Full Profile
+                    </button>
+                    <button class="btn-success" id="startConsultation">
+                        <i class="fas fa-stethoscope"></i>
+                        Start Consultation
+                    </button>
+                    <button class="btn-warning" id="rescheduleAppointment">
+                        <i class="fas fa-calendar-plus"></i>
+                        Reschedule
+                    </button>
+                    <button class="btn-danger" id="cancelAppointment">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Profile Modal (Same as dashboard) -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="patientName">Patient Name</h2>
+                <span class="close">&times;</span>
+            </div>
+            
+            <div class="modal-body">
+                <div class="patient-tabs">
+                    <button class="tab-btn active" data-tab="profile">Profile</button>
+                    <button class="tab-btn" data-tab="diagnosis">Diagnosis</button>
+                    <button class="tab-btn" data-tab="reports">Reports</button>
+                    <button class="tab-btn" data-tab="timeline">Timeline</button>
+                </div>
+                
+                <div class="tab-content">
+                    <div id="profile" class="tab-pane active">
+                        <div class="patient-profile">
+                            <div class="profile-info">
+                                <h3>Personal Information</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <label>Name:</label>
+                                        <span id="patientFullName">John Doe</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Age:</label>
+                                        <span id="patientAge">35</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Contact:</label>
+                                        <span id="patientContact">+1 234-567-8900</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Blood Group:</label>
+                                        <span id="patientBloodGroup">O+</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="medical-history">
+                                <h3>Medical History</h3>
+                                <div class="history-list" id="medicalHistoryList">
+                                    <!-- Medical history items -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="diagnosis" class="tab-pane">
+                        <div class="diagnosis-section">
+                            <h3>Current Diagnosis</h3>
+                            <textarea id="diagnosisNotes" placeholder="Enter diagnosis notes..."></textarea>
+                            
+                            <h3>Prescribed Medications</h3>
+                            <div class="medication-list" id="medicationList">
+                                <!-- Medications will be added here -->
+                            </div>
+                            <button class="add-medication-btn">
+                                <i class="fas fa-plus"></i>
+                                Add Medication
+                            </button>
+                            
+                            <div class="treatment-actions">
+                                <button class="btn-primary" id="saveDiagnosis">
+                                    <i class="fas fa-save"></i>
+                                    Save Diagnosis
+                                </button>
+                                <button class="btn-success" id="sendWhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                    Send to WhatsApp
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="reports" class="tab-pane">
+                        <div class="reports-section">
+                            <h3>Medical Reports</h3>
+                            <div class="upload-area">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag and drop files here or click to upload</p>
+                                <input type="file" id="fileUpload" multiple accept=".pdf,.jpg,.png,.doc,.docx">
+                            </div>
+                            
+                            <div class="reports-list" id="reportsList">
+                                <!-- Reports will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="timeline" class="tab-pane">
+                        <div class="timeline-section">
+                            <h3>Visit Timeline</h3>
+                            <div class="timeline" id="visitTimeline">
+                                <!-- Timeline items will be populated -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=1.1"></script>
+    <script src="appointments.js"></script>
+</body>
+</html> 
