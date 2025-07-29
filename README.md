@@ -125,27 +125,60 @@ It acts as a smart virtual receptionist, helping clinics function more efficient
 Clinic WhatsApp AI Assistant isn’t just a project — it’s a leap forward for grassroots healthcare in India.
 
 **Sample Database**
--- Sample Database Setup for Sunrise Clinics
 
--- 1. Create Database
+# 🏥 Clinic AI Assistant – Sample Database Setup
+
+This sample database sets up the core backend for the **ClinicAI**, including doctor schedules and patient appointments. Follow these steps to set up the database in MySQL.
+
+---
+
+## ✅ Step 1: Create the Database
+
+```sql
 CREATE DATABASE IF NOT EXISTS clinic_db;
-USE clinic_db;
+```
 
--- 2. Clean Setup (Drop if exists)
+---
+
+## ✅ Step 2: Use the Database
+
+```sql
+USE clinic_db;
+```
+
+---
+
+## ✅ Step 3: Drop Existing Tables (for Clean Setup)
+
+```sql
 DROP TABLE IF EXISTS appointments;
 DROP TABLE IF EXISTS doctor_schedule;
+```
 
--- 3. Create doctor_schedule Table
+---
+
+## ✅ Step 4: Create `doctor_schedule` Table
+
+Stores doctor availability for specific days, dates, and time slots.
+
+```sql
 CREATE TABLE doctor_schedule (
     id INT AUTO_INCREMENT PRIMARY KEY,
     doctor_name VARCHAR(100) NOT NULL,
-    day VARCHAR(10) NOT NULL,         -- Sunday, Monday, etc.
-    date DATE NOT NULL,               -- Specific date (e.g., '2025-08-03')
-    time_slot TIME NOT NULL,          -- Time slot (e.g., '09:00:00')
+    day VARCHAR(10) NOT NULL,         -- Example: Monday, Tuesday
+    date DATE NOT NULL,               -- Specific date
+    time_slot TIME NOT NULL,          -- Example: 09:00:00
     availability_status VARCHAR(20)   -- Available / Blocked / Not Available
 );
+```
 
--- 4. Create appointments Table
+---
+
+## ✅ Step 5: Create `appointments` Table
+
+Stores all appointment details booked through the WhatsApp AI Assistant.
+
+```sql
 CREATE TABLE appointments (
     appointment_number INT AUTO_INCREMENT PRIMARY KEY,
     patient_name VARCHAR(100) NOT NULL,
@@ -156,8 +189,15 @@ CREATE TABLE appointments (
     appointment_time TIME,
     status VARCHAR(20)                -- Booked / Cancelled / Completed
 );
+```
 
--- 5. Insert Sample Data into doctor_schedule
+---
+
+## ✅ Step 6: Insert Sample Data into `doctor_schedule`
+
+Includes working hours, blocked slots, and unavailable days for **Dr. Ram** and **Dr. Shyam**.
+
+```sql
 INSERT INTO doctor_schedule (doctor_name, day, date, time_slot, availability_status)
 VALUES
 ('Dr. Ram', 'Sunday', '2025-08-03', '09:00:00', 'Available'),
@@ -169,9 +209,20 @@ VALUES
 ('Dr. Ram', 'Tuesday', '2025-08-05', '09:00:00', 'Blocked'),
 ('Dr. Ram', 'Tuesday', '2025-08-05', '10:00:00', 'Available'),
 ('Dr. Ram', 'Tuesday', '2025-08-05', '11:00:00', 'Available');
+```
 
--- 6. Insert Sample Data into appointments
+---
+
+## ✅ Step 7: Insert Sample Data into `appointments`
+
+This reflects booked appointments through the AI assistant.
+
+```sql
 INSERT INTO appointments (patient_name, doctor_name, issue, appointment_day, appointment_date, appointment_time, status)
 VALUES
 ('Aarav Patel', 'Dr. Ram', 'Headache', 'Sunday', '2025-08-03', '09:00:00', 'Booked'),
 ('Meera Iyer', 'Dr. Shyam', 'Fever', 'Monday', '2025-08-04', '09:00:00', 'Booked');
+```
+
+---
+
