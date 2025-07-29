@@ -5,7 +5,7 @@ from ollama_client import ask_mistral, classify_message
 from rapidfuzz import process
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here_change_this'  # Keep this secure!
+app.secret_key = 'your_secret_key_here_change_this'
 
 DB_CONFIG = {
     'host': 'localhost',
@@ -29,10 +29,10 @@ def get_doctor_appointments(doctor_name):
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT appointment_number, patient_name, issue, appointment_day,
-                       appointment_date, appointment_time, status
-                FROM appointments
-                WHERE doctor_name = %s
+                SELECT appointment_number, patient_name, issue, appointment_day, 
+                       appointment_date, appointment_time, status 
+                FROM appointments 
+                WHERE doctor_name = %s 
                 ORDER BY appointment_date, appointment_time
             """, (doctor_name,))
             return cursor.fetchall()
@@ -48,9 +48,9 @@ def get_doctor_schedule(doctor_name):
     try:
         with conn.cursor() as cursor:
             cursor.execute("""
-                SELECT id, day, date, time_slot, availability_status
-                FROM doctor_schedule
-                WHERE doctor_name = %s
+                SELECT id, day, date, time_slot, availability_status 
+                FROM doctor_schedule 
+                WHERE doctor_name = %s 
                 ORDER BY date, time_slot
             """, (doctor_name,))
             return cursor.fetchall()
@@ -67,6 +67,8 @@ USERS = {
 
 DOCTOR_NAMES = [u['full_name'].lower() for u in USERS.values()]
 
+user_sessions = {}
+
 def match_doctor_name(user_input):
     result = process.extractOne(user_input.lower(), DOCTOR_NAMES)
     if result:
@@ -74,47 +76,33 @@ def match_doctor_name(user_input):
         return best_match if score > 70 else None
     return None
 
-# Helper functions to get/save bot session from Flask session
-def get_bot_session():
-    bot_session = session.get('bot_session', None)
-    if not bot_session:
-        # Initialize a new booking session state
-        bot_session = {
-            "step": "start",
-            "mode": "",
-            "patient_name": "",
-            "doctor_name": "",
-            "issue": "",
-            "date": "",
-            "available_slots": [],
-            "time_slot": ""
-        }
-        session['bot_session'] = bot_session
-    return bot_session
-
-def save_bot_session(bot_session):
-    session['bot_session'] = bot_session
-    session.modified = True
-    print("Bot session updated:", bot_session)  # Debug log
-
 @app.route("/webhook", methods=["POST"])
 def bot():
     user_msg = request.values.get("Body", "").strip()
     phone_number = request.values.get("From")
     response = MessagingResponse()
 
-    # Load bot session from Flask session
-    bot_session = get_bot_session()
-    print("📩 Incoming:", user_msg)
-    print("📱 Session before:", bot_session)
+    session_data = user_sessions.get(phone_number, {
+        "step": "start",
+        "mode": "",
+        "patient_name": "",
+        "doctor_name": "",
+        "issue": "",
+        "date": "",
+        "available_slots": [],
+        "time_slot": ""
+    })
 
-    if bot_session["step"] == "start":
+    print("📩 Incoming:", user_msg)
+    print("📱 Session:", phone_number, session_data)
+
+    if session_data["step"] == "start":
         category = classify_message(user_msg)
 
         if category == "booking_appointment":
-            bot_session["mode"] = "booking"
-            bot_session["step"] = "waiting_for_patient_name"
-            save_bot_session(bot_session)
+            session_data["mode"] = "booking"
+            session_data["step"] = "waiting_for_patient_name"
+            user_sessions[phone_number] = session_data
             response.message("Sure! Let's get started.\nWhat is your full name?")
             return str(response)
 
@@ -127,41 +115,41 @@ def bot():
             response.message("Sorry, I couldn't understand. Please try again.")
             return str(response)
 
-    elif bot_session["mode"] == "booking":
-        if bot_session["step"] == "waiting_for_patient_name":
-            bot_session["patient_name"] = user_msg
-            bot_session["step"] = "waiting_for_issue"
-            save_bot_session(bot_session)
+    elif session_data["mode"] == "booking":
+        if session_data["step"] == "waiting_for_patient_name":
+            session_data["patient_name"] = user_msg
+            session_data["step"] = "waiting_for_issue"
+            user_sessions[phone_number] = session_data
             response.message("What issue are you facing?")
             return str(response)
 
-        elif bot_session["step"] == "waiting_for_issue":
-            bot_session["issue"] = user_msg
-            bot_session["step"] = "waiting_for_doctor"
-            save_bot_session(bot_session)
+        elif session_data["step"] == "waiting_for_issue":
+            session_data["issue"] = user_msg
+            session_data["step"] = "waiting_for_doctor"
+            user_sessions[phone_number] = session_data
             response.message("Which doctor would you like to consult?")
             return str(response)
 
-        elif bot_session["step"] == "waiting_for_doctor":
+        elif session_data["step"] == "waiting_for_doctor":
             matched_name = match_doctor_name(user_msg)
             if not matched_name:
                 response.message("Doctor not found. Please enter a valid name like 'Ram' or 'Shyam'")
             else:
-                bot_session["doctor_name"] = matched_name.capitalize()
-                bot_session["step"] = "waiting_for_date"
-                save_bot_session(bot_session)
+                session_data["doctor_name"] = matched_name.capitalize()
+                session_data["step"] = "waiting_for_date"
+                user_sessions[phone_number] = session_data
                 response.message("Please enter the appointment date (YYYY-MM-DD):")
             return str(response)
 
-        elif bot_session["step"] == "waiting_for_date":
-            bot_session["date"] = user_msg
+        elif session_data["step"] == "waiting_for_date":
+            session_data["date"] = user_msg
             try:
                 conn = get_db_connection()
                 with conn.cursor() as cursor:
                     cursor.execute("""
-                        SELECT time_slot FROM doctor_schedule
+                        SELECT time_slot FROM doctor_schedule 
                         WHERE doctor_name = %s AND date = %s AND availability_status = 'Available'
-                    """, (bot_session["doctor_name"], bot_session["date"]))
+                    """, (session_data["doctor_name"], session_data["date"]))
                     results = cursor.fetchall()
             except Exception as e:
                 print("DB error during slot fetch:", e)
@@ -173,18 +161,18 @@ def bot():
             if not results:
                 response.message("❌ No slots available on that date. Please try a different date:")
             else:
-                bot_session["available_slots"] = [row['time_slot'] for row in results]
-                bot_session["step"] = "waiting_for_time"
-                slot_list = "\n".join(bot_session["available_slots"])
+                session_data["available_slots"] = [row['time_slot'] for row in results]
+                session_data["step"] = "waiting_for_time"
+                slot_list = "\n".join(session_data["available_slots"])
                 response.message(f"Available slots:\n{slot_list}\n\nPlease choose one:")
-            save_bot_session(bot_session)
+            user_sessions[phone_number] = session_data
             return str(response)
 
-        elif bot_session["step"] == "waiting_for_time":
-            if user_msg not in bot_session["available_slots"]:
+        elif session_data["step"] == "waiting_for_time":
+            if user_msg not in session_data["available_slots"]:
                 response.message("Invalid slot. Please pick from the list above.")
             else:
-                bot_session["time_slot"] = user_msg
+                session_data["time_slot"] = user_msg
                 try:
                     conn = get_db_connection()
                     with conn.cursor() as cursor:
@@ -192,15 +180,15 @@ def bot():
                             INSERT INTO appointments (patient_name, doctor_name, issue, appointment_day, appointment_date, appointment_time, status)
                             VALUES (%s, %s, %s, DAYNAME(%s), %s, %s, 'Booked')
                         """, (
-                            bot_session["patient_name"], bot_session["doctor_name"], bot_session["issue"],
-                            bot_session["date"], bot_session["date"], bot_session["time_slot"]
+                            session_data["patient_name"], session_data["doctor_name"], session_data["issue"],
+                            session_data["date"], session_data["date"], session_data["time_slot"]
                         ))
                         cursor.execute("""
                             UPDATE doctor_schedule
                             SET availability_status = 'Blocked'
                             WHERE doctor_name = %s AND date = %s AND time_slot = %s
                         """, (
-                            bot_session["doctor_name"], bot_session["date"], bot_session["time_slot"]
+                            session_data["doctor_name"], session_data["date"], session_data["time_slot"]
                         ))
                         conn.commit()
                 except Exception as e:
@@ -212,18 +200,16 @@ def bot():
 
                 response.message(
                     f"✅ Booking Confirmed!\n"
-                    f"Name: {bot_session['patient_name']}\n"
-                    f"Doctor: {bot_session['doctor_name']}\n"
-                    f"Issue: {bot_session['issue']}\n"
-                    f"Date: {bot_session['date']}\n"
-                    f"Time: {bot_session['time_slot']}"
+                    f"Name: {session_data['patient_name']}\n"
+                    f"Doctor: {session_data['doctor_name']}\n"
+                    f"Issue: {session_data['issue']}\n"
+                    f"Date: {session_data['date']}\n"
+                    f"Time: {session_data['time_slot']}"
                 )
-                # Clear bot session after successful booking
-                session.pop('bot_session', None)
+                user_sessions.pop(phone_number)
                 return str(response)
 
-    # Save session if no response sent
-    save_bot_session(bot_session)
+    user_sessions[phone_number] = session_data
     return str(response)
 
 @app.route("/", methods=["GET"])
